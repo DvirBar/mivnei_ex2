@@ -11,7 +11,7 @@ using namespace std;
 template <class K, class T>
 class AVLTree
 {
-protected:
+private:
     class AVLNode {
     public:
         K key;
@@ -29,10 +29,10 @@ protected:
         void updateHeight();
         bool isLeaf();
 
-        virtual AVLNode* RRrotation();
-        virtual AVLNode* LLrotation();
-        virtual AVLNode* RLrotation();
-        virtual AVLNode* LRrotation();
+        AVLNode* RRrotation();
+        AVLNode* LLrotation();
+        AVLNode* RLrotation();
+        AVLNode* LRrotation();
         AVLNode* execRotation();
     };
 
@@ -64,7 +64,7 @@ public:
     AVLTree();
     AVLTree(const AVLTree &tree) = delete;
     AVLTree& operator=(const AVLTree &tree) = delete;
-    virtual ~AVLTree();
+    ~AVLTree();
 
     AVLNode* insert(const K& key, const T& data);
     T remove(const K& key);

@@ -16,6 +16,9 @@
 #define WORLDCUP23A2_H_
 
 #include "wet2util.h"
+#include "AVLTree.h"
+#include "RankTree.h"
+#include "DynamicArray.h"
 
 class world_cup_t {
 private:
