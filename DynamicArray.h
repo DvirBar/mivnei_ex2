@@ -28,6 +28,8 @@ public:
     void push(const T& newData);
     const T& top() const;
     T pop();
+    int getSize() const;
+    void printDynamicArray() const;
 
 
 };
@@ -75,7 +77,7 @@ DynamicArray<T>::~DynamicArray() {
 template <class T>
 void DynamicArray<T>::copyArray(int newSize) {
     T* newData = new T[newSize];
-    for(int i = 0; i < arraySize; i++) {
+    for(int i = 0; i < index; i++) {
         newData[i] = dataArray[i];
     }
 
@@ -112,13 +114,25 @@ const T& DynamicArray<T>::top() const {
 
 template <class T>
 T DynamicArray<T>::pop() {
-    if(index <= arraySize / SHRINKING_CONDITION)
-        shrinkArray();
     T poppedData = dataArray[index - 1]; // T Assumption : Copy Constructor
     index--;
+    if(index <= arraySize / SHRINKING_CONDITION)
+        shrinkArray();
     return poppedData;
 }
 
+template <class T>
+void DynamicArray<T>::printDynamicArray() const {
+    for(int i = 0; i < index; i++) {
+        std::cout << dataArray[i] << " ";
+    }
+    std::cout << std::endl;
+}
+
+template <class T>
+int DynamicArray<T>::getSize() const {
+    return arraySize;
+}
 
 
 
