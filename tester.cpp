@@ -1,4 +1,5 @@
 #include "HashTable.h"
+#include "UnionFind.h"
 #include <iostream>
 
 using namespace std;
