@@ -35,7 +35,7 @@ public:
     ~HashTable();
 
     void insert(int key, T data);
-    T find(int key);
+    T lookup(int key);
     T remove(int key);
     T& operator[](int key);
     void print();
@@ -124,16 +124,15 @@ void HashTable<T>::createTableFromArray(Pair<int, T>* array, AVLTree<int, T>** n
 }
 
 template<class T>
-T HashTable<T>::find(int key) {
+T HashTable<T>::lookup(int key) {
     AVLTree<int, T>* dataTree = table[hash(key)];
     return dataTree->search(key);
 }
 
 template<class T>
 T HashTable<T>::remove(int key) {
-    AVLTree<int, T>* dataTree = table[hash(key)];
     // ASSUMPTION - T has copy c'tor
-    T removedData = dataTree->remove(key);
+    T removedData = table[hash(key)]->remove(key);
     numElements--;
 
     if(numElements <= tableSize/SHRINKING_RATE) {
@@ -145,7 +144,7 @@ T HashTable<T>::remove(int key) {
 
 template<class T>
 void HashTable<T>::shrinkTable() {
-    createAndCopyTable(table/EXPANSION_RATE);
+    createAndCopyTable(tableSize/EXPANSION_RATE);
 }
 
 template<class T>

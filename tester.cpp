@@ -1,4 +1,7 @@
 #include "HashTable.h"
+#include <iostream>
+
+using namespace std;
 
 int main() {
     HashTable<int> table(30);
@@ -17,5 +20,13 @@ int main() {
     }
 
 
+//    table.print();
+
+    for(int i=2000; i<=3000; i++) {
+        table.remove(i);
+    }
+
     table.print();
+
+    cout << table.lookup(622) << endl;
 }
