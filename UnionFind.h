@@ -49,6 +49,8 @@ public:
 
     void insert(int memberKey, M memberData, int setKey, S setData);
     void unite(int set1Key, int set2Key);
+    S find(int memberKey);
+    M get(int memberKey);
 };
 
 template<class S, class M>
