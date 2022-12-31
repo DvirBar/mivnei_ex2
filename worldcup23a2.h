@@ -19,6 +19,10 @@
 #include "AVLTree.h"
 #include "RankTree.h"
 #include "DynamicArray.h"
+#include "HashTable.h"
+#include "UnionFind.h"
+#include "Exception.h"
+#include "Pair.h"
 
 class world_cup_t {
 private:
