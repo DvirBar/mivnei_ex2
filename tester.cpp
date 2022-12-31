@@ -6,7 +6,6 @@ using namespace std;
 
 int main() {
     HashTable<int> table(30);
-
     for(int i=1; i<=30; i++) {
         table.insert(i, i);
     }
@@ -21,7 +20,7 @@ int main() {
     }
 
 
-//    table.print();
+    table.print();
 
     for(int i=2000; i<=3000; i++) {
         table.remove(i);

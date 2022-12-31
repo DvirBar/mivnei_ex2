@@ -10,7 +10,7 @@ using namespace std;
 
 template<class T>
 class HashTable {
-    AVLTree<int ,T>** table;
+    AVLTree<int ,T>* table;
     int numElements;
     int tableSize;
 
@@ -19,8 +19,8 @@ class HashTable {
     void expandTable();
     void shrinkTable();
     void extractToArray(Pair<int, T>* array);
-    void createTableFromArray(Pair<int, T>* array, AVLTree<int, T>** newTable);
-    void insertToCell(int key, T data, AVLTree<int, T>** tableToInsert);
+    void createTableFromArray(Pair<int, T>* array, AVLTree<int, T>* newTable);
+    void insertToCell(int key, T data, AVLTree<int, T>* tableToInsert);
 
     static const int MIN_SIZE = 2;
     static const int EXPANSION_RATE = 2;
@@ -50,7 +50,7 @@ HashTable<T>::HashTable(int initSize):
             throw InvalidArguments();
         }
 
-        table = new AVLTree<int, T>*[initSize]();
+        table = new AVLTree<int, T>[initSize]();
 }
 
 template<class T>
@@ -74,14 +74,8 @@ void HashTable<T>::insert(int key, T data) {
 }
 
 template<class T>
-void HashTable<T>::insertToCell(int key, T data, AVLTree<int, T>** tableToInsert) {
-    AVLTree<int, T>* dataTree = tableToInsert[hash(key)];
-    if(dataTree == nullptr) {
-        dataTree = new AVLTree<int, T>();
-    }
-
-    dataTree->insert(key, data);
-    tableToInsert[hash(key)] = dataTree;
+void HashTable<T>::insertToCell(int key, T data, AVLTree<int, T>* tableToInsert) {
+    tableToInsert[hash(key)].insert(key, data);
 }
 
 template<class T>
@@ -96,7 +90,7 @@ void HashTable<T>::createAndCopyTable(int size) {
     extractToArray(helperArray);
 
     tableSize = size;
-    auto newTable = new AVLTree<int, T>*[tableSize]();
+    auto newTable = new AVLTree<int, T>[tableSize]();
 
     createTableFromArray(helperArray, newTable);
 
@@ -107,16 +101,15 @@ void HashTable<T>::createAndCopyTable(int size) {
 template<class T>
 void HashTable<T>::extractToArray(Pair<int, T>* array) {
     for(int i=0; i<tableSize; i++) {
-        auto currentElem = table[i];
-        if(currentElem != nullptr && !currentElem->isEmpty()) {
-            currentElem->inorderDataToArray(array);
-            array += currentElem->getNumNodes();
+        if(!table[i].isEmpty()) {
+            table[i].inorderDataToArray(array);
+            array += table[i].getNumNodes();
         }
     }
 }
 
 template<class T>
-void HashTable<T>::createTableFromArray(Pair<int, T>* array, AVLTree<int, T>** newTable) {
+void HashTable<T>::createTableFromArray(Pair<int, T>* array, AVLTree<int, T>* newTable) {
     for(int i=0; i<numElements; i++) {
         Pair<int, T> currentElem = array[i];
         insertToCell(currentElem.getKey(), currentElem.getValue(), newTable);
@@ -125,14 +118,13 @@ void HashTable<T>::createTableFromArray(Pair<int, T>* array, AVLTree<int, T>** n
 
 template<class T>
 T HashTable<T>::lookup(int key) {
-    AVLTree<int, T>* dataTree = table[hash(key)];
-    return dataTree->search(key);
+    table[hash(key)].search(key);
 }
 
 template<class T>
 T HashTable<T>::remove(int key) {
     // ASSUMPTION - T has copy c'tor
-    T removedData = table[hash(key)]->remove(key);
+    T removedData = table[hash(key)].remove(key);
     numElements--;
 
     if(numElements <= tableSize/SHRINKING_RATE) {
@@ -157,10 +149,10 @@ template<class T>
 void HashTable<T>::print() {
     for(int i=0; i<tableSize; i++) {
         cout << "index: " << i << endl;
-        if(table[i] == nullptr) {
+        if(table[i].isEmpty()) {
             cout << "--EMPTY--" << endl;
         } else {
-            table[i]->printTree();
+            table[i].printTree();
         }
         cout << "-------------------------------" << endl;
     }
