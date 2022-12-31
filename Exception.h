@@ -5,7 +5,8 @@
 
 using namespace std;
 
-class InvalidArgumets{};
+class InvalidArguments: public  exception {};
+
 class KeyNotFound: public exception {
 public:
     const char* what() const noexcept override {

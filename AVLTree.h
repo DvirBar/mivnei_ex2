@@ -69,6 +69,7 @@ public:
     AVLNode* insert(const K& key, const T& data);
     T remove(const K& key);
     bool isExist(const K& key) const;
+    K getRootKey() const;
     const T& search(const K& key) const;
     const T& nextInorder(const K& currentKey) const;
     const T& prevInorder(const K& currentKey) const;
@@ -605,6 +606,11 @@ void AVLTree<K, T>::buildNearlyCompleteAux(AVLNode* node, int height) {
 template<class K, class T>
 bool AVLTree<K, T>::AVLNode::isLeaf() {
     return this->leftChild == nullptr && this->rightChild == nullptr;
+}
+
+template<class K, class T>
+K AVLTree<K, T>::getRootKey() const {
+    return root->key;
 }
 
 #endif // AVLTREE_H_
