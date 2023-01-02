@@ -9,10 +9,8 @@
 using namespace std;
 
 template <class K, class T>
-class RankTree
-{
-    class RankNode
-    {
+class RankTree {
+    class RankNode {
     public:
         K key;
         T data;
@@ -51,10 +49,6 @@ class RankTree
     void buildNearlyComplete(int size);
     void removeLeavesAux(RankNode* node, RankNode* parent, int size);
 
-    //TODO: WHAT ARE THOSE FUNCTIONS
-    void treeRotate(RankNode* node);
-    void replaceParent(RankNode* node, RankNode* parent);
-
     static int getNodeBalanceFactor(RankNode* node);
     static int getNodeHeight(RankNode* node);
     static int getNodeWeight(RankNode* node);
@@ -81,9 +75,6 @@ public:
     const T& prevInorder(const K& currentKey) const;
     void inorderDataToArray(Pair<K,T>* array) const;
     int Rank(const K& key) const;
-
-    //TODO: WHAT IS THIS FUNCTION
-    void uniteTrees(const RankTree& tree);
 
     int getNumNodes() const;
     const T& findFirstInRange(const K& range) const;
@@ -161,6 +152,11 @@ typename RankTree<K, T>::RankNode* RankTree<K, T>::RankNode::RRrotation()
     updateHeight();
     newParent->updateHeight();
 
+    // Update weight
+    int newParentWeight = this->weight;
+    this->weight = 1+rightGrandChild->weight+leftChild->weight;
+    newParent = newParentWeight;
+
     return newParent;
 }
 
@@ -175,6 +171,11 @@ typename RankTree<K, T>::RankNode* RankTree<K, T>::RankNode::LLrotation()
 
     updateHeight();
     newParent->updateHeight();
+
+    // Update weight
+    int newParentWeight = this->weight;
+    this->weight = 1+newLeftGrandChild->weight+rightChild->weight;
+    newParent->weight = newParentWeight;
 
     return newParent;
 }
