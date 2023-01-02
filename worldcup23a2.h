@@ -19,12 +19,14 @@
 #include "AVLTree.h"
 #include "RankTree.h"
 #include "DynamicArray.h"
+#include "Player.h"
+#include "Team.h"
+#include "UnionFind.h"
 
 class world_cup_t {
 private:
-	//
-	// Here you may add anything you want
-	//
+	AVLTree<int, Team*> teams;
+    UnionFind<Team*, Player*> players;
 	
 public:
 	// <DO-NOT-MODIFY> {
