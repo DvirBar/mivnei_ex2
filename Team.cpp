@@ -225,6 +225,10 @@ int Team::getTotalStats() const {
     return totalPoints + totalGoals - totalCards;
 }
 
+typename UnionFind<Team*, Player*>::Node* Team::getHead() {
+    return head;
+}
+
 void Team::updateTopScorer(Player *player) {
     if(teamTopScorer == nullptr ||
        teamTopScorer->getStatsTuple() < player->getStatsTuple())

@@ -6,6 +6,7 @@
 #include "AVLTree.h"
 #include "Player.h"
 #include "Tuple.h"
+#include "UnionFind.h"
 
 using namespace std;
 
@@ -31,6 +32,7 @@ public:
     int getTotalPoints() const;
     int getTotalGamesPlayed() const;
     int getId() const;
+    UnionFind<Team*, Player*>::Node* getHead();
     const AVLTree<Tuple, Player*>& getStatsTree() const;
     StatusType get_all_players(int* const output);
     void addPlayer(Player* player);
@@ -74,9 +76,9 @@ private:
     int totalGamesPlayed;
     AVLTree<int, Player*> teamPlayersByID;
     AVLTree<Tuple, Player*> teamPlayersByStats;
+    UnionFind<Team*, Player*>::Node* head;
 
-    // TODO: implement
-    void clearTeam();
+
     void uniteTopScorers(Team* team1, Team* team2);
 };
 
