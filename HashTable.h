@@ -37,7 +37,6 @@ public:
     void insert(int key, T data);
     T lookup(int key);
     T remove(int key);
-    T& operator[](int key);
     void print();
 };
 
@@ -137,12 +136,6 @@ T HashTable<T>::remove(int key) {
 template<class T>
 void HashTable<T>::shrinkTable() {
     createAndCopyTable(tableSize/EXPANSION_RATE);
-}
-
-template<class T>
-T& HashTable<T>::operator[](int key) {
-    AVLTree<int, T>* dataTree = table[hash(key)];
-    return dataTree->search(key);
 }
 
 template<class T>
