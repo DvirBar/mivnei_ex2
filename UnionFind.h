@@ -32,6 +32,7 @@ public:
         S getSet();
         void setParent(Node* node);
         int getNumData();
+        void incrementNumData();
     };
 
     Node* insert(int memberKey, M memberData, Node* parent, int setKey, S setData);
@@ -111,6 +112,13 @@ typename UnionFind<S, M>::Node* UnionFind<S, M>::Node::getParent() {
 template<class S, class M>
 int UnionFind<S, M>::Node::getNumData() {
     return accuData.getKey();
+}
+
+template<class S, class M>
+void UnionFind<S, M>::Node::incrementNumData() {
+    int dataToIncrement = accuData.getKey();
+    dataToIncrement++;
+    accuData.setKey(dataToIncrement);
 }
 
 template<class S, class M>

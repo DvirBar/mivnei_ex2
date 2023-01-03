@@ -82,8 +82,12 @@ output_t<int> world_cup_t::play_match(int teamId1, int teamId2)
     int team2Ability = team2->getTotalTeamAbility();
     int team1SpiritStrength = team1->getSpiritStrength();
     int team2SpiritStrength = team2->getSpiritStrength();
+    UnionFind<Team*, Player*>::Node* team1Head = team1->getHead();
+    UnionFind<Team*, Player*>::Node* team2Head = team2->getHead();
     team1->addGame();
+    team1Head->incrementNumData();
     team2->addGame();
+    team2Head->incrementNumData();
 
     if(team1Ability > team2Ability) {
         team1->addPoints(WINNER_PTS);
