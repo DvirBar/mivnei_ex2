@@ -27,6 +27,14 @@ class world_cup_t {
 private:
 	AVLTree<int, Team*> teams;
     UnionFind<Team*, Player*> players;
+    RankTree<Pair<int,int>, Team*> teamsByAbility;
+    static const int WINNER_PTS = 3;
+    static const int TIE_PTS = 1;
+    static const int TIE = 0;
+    static const int FIRST_BY_ABILITY = 1;
+    static const int FIRST_BY_SPIRIT = 2;
+    static const int SECOND_BY_ABILITY = 3;
+    static const int SECOND_BY_SPIRIT = 4;
 	
 public:
 	// <DO-NOT-MODIFY> {

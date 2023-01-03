@@ -30,7 +30,7 @@ public:
     int getGoals() const;
     int getCards() const;
     void setGoals(int goals);
-    void setCards(int cards);
+    void addCards(int cards);
     void setIsGoalKeeper(bool isGoalKeeper);
     void setGamesPlayed(int gamesPlayed);
     void setTeam(Team* team);

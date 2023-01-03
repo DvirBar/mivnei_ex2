@@ -17,7 +17,13 @@ public:
 private:
     K m_key;
     T m_value;
+    friend bool operator>(const Pair& pair1, const Pair& pair2);
+    friend bool operator==(const Pair& pair1, const Pair& pair2);
 };
+
+template <class K, class T>
+bool operator<(const Pair<K, T>& pair1, const Pair<K, T>& pair2);
+
 
 template <class K, class T>
 Pair<K, T>::Pair(const K& key, const T& value):
@@ -45,5 +51,27 @@ void Pair<K, T>::setValue(const T &value) {
     m_value = value;
 }
 
+template<class K, class T>
+bool operator>(const Pair<K, T>& pair1, const Pair<K, T>& pair2) {
+    if(pair1.m_key > pair2.m_key) {
+        return true;
+    }
+
+    if(pair1.m_key == pair2.m_key) {
+        return pair1.m_value > pair2.m_value;
+    }
+
+    return false;
+}
+
+template<class K, class T>
+bool operator==(const Pair<K, T>& pair1, const Pair<K, T>& pair2) {
+    return ((pair1.m_key == pair2.m_key) && (pair1.m_value == pair2.m_value));
+}
+
+template <class K, class T>
+bool operator<(const Pair<K, T>& pair1, const Pair<K, T>& pair2) {
+    return pair2 > pair1;
+}
 #endif // PAIR_H_
 

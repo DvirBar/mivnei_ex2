@@ -43,6 +43,7 @@ class RankTree {
     RankNode* insertByNode(RankNode* node, const K& key, const T& data);
     typename RankTree<K, T>::RankNode* removeAux(const K& key, RankNode* node, T* data);
 
+
     RankNode* baseRemove(RankNode* node);
     RankNode* removeInorder(RankNode* node, RankNode* replacedNode);
 
@@ -58,6 +59,7 @@ class RankTree {
     static void populateFromArrayAux(RankNode* node, Pair<K, T>* array, int* index);
     static const RankNode* searchByNode(const RankNode* node, const K& key);
     static const T& firstInRangeAux(RankNode *node, T* lastValid, const K &range);
+    static const RankNode* selectByNode(const RankNode* node, const int rank);
 
     static const int COUNT = 10;
 
@@ -75,6 +77,7 @@ public:
     const T& prevInorder(const K& currentKey) const;
     void inorderDataToArray(Pair<K,T>* array) const;
     int Rank(const K& key) const;
+    const T& Select(int rank) const;
 
     int getNumNodes() const;
     const T& findFirstInRange(const K& range) const;
@@ -155,7 +158,7 @@ typename RankTree<K, T>::RankNode* RankTree<K, T>::RankNode::RRrotation()
     // Update weight
     int newParentWeight = this->weight;
     this->weight = 1+rightGrandChild->weight+leftChild->weight;
-    newParent = newParentWeight;
+    newParent->weight = newParentWeight;
 
     return newParent;
 }
@@ -636,6 +639,38 @@ void RankTree<K, T>::buildNearlyCompleteAux(RankNode* node, int height) {
 template<class K, class T>
 bool RankTree<K, T>::RankNode::isLeaf() {
     return this->leftChild == nullptr && this->rightChild == nullptr;
+}
+
+
+
+
+template<class K, class T>
+const typename RankTree<K, T>::RankNode* RankTree<K, T>::selectByNode(const RankTree::RankNode* node, const int rank) {
+    if(node == nullptr) {
+        throw KeyNotFound();
+    }
+
+    int leftChildWeight = 0, rightChildWeight = 0;
+
+    if(node->leftChild != nullptr)
+        leftChildWeight = node->leftChild->weight;
+    if(node->rightChild != nullptr)
+        rightChildWeight = node->rightChild->weight;
+
+    if(leftChildWeight == rank - 1) {
+        return node;
+    }
+
+    if(leftChildWeight > rank - 1) {
+        return selectByNode(node->leftChild, rank);
+    }
+
+    return selectByNode(node->rightChild, rank - leftChildWeight - 1);
+}
+
+template<class K, class T>
+const T& RankTree<K, T>::Select(int rank) const {
+    return selectByNode(root, rank)->data;
 }
 
 

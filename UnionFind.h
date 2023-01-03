@@ -29,6 +29,8 @@ public:
         void changeSet(S newSet);
         M getData();
         Node* getParent();
+        S getSet();
+        void setParent(Node* node);
         int getNumData();
     };
 
@@ -45,6 +47,8 @@ private:
 
     static const int INIT_SETS_TABLE_VALUE = 2;
     static const int INIT_NODES_TABLE_VALUE = 2;
+
+    static void compressPaths(Node* node, Node* root);
 };
 
 template<class S, class M>
@@ -80,6 +84,16 @@ M UnionFind<S, M>::Node::getData() {
 }
 
 template<class S, class M>
+S UnionFind<S, M>::Node::getSet() {
+    return set;
+}
+
+template<class S, class M>
+void UnionFind<S, M>::Node::setParent(Node* node) {
+    parent = node;
+}
+
+template<class S, class M>
 M UnionFind<S, M>::get(int memberKey) {
     return nodes.lookup(memberKey)->getData();
 }
@@ -97,6 +111,31 @@ typename UnionFind<S, M>::Node* UnionFind<S, M>::Node::getParent() {
 template<class S, class M>
 int UnionFind<S, M>::Node::getNumData() {
     return accuData.getKey();
+}
+
+template<class S, class M>
+S UnionFind<S, M>::find(int memberKey) {
+    Node* lookedUpNode = nodes.lookup(memberKey);
+    Node* tempNode = lookedUpNode;
+    while(tempNode->getParent() != nullptr) {
+        tempNode = tempNode->getParent();
+    }
+
+    Node* root = tempNode;
+    tempNode = lookedUpNode;
+    compressPaths(tempNode, root);
+
+    return root->getSet();
+}
+
+template<class S, class M>
+void UnionFind<S, M>::compressPaths(Node *node, Node *root) {
+    Node* prevNode;
+    while(node->getParent() != nullptr) {
+        prevNode = node;
+        node = node->getParent();
+        prevNode->setParent(root);
+    }
 }
 
 #endif //MIVNEI_EX2_UNIONFIND_H

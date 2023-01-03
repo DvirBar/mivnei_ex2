@@ -13,7 +13,7 @@ Player::Player(
 {
     if (playerId <= 0 || gamesPlayed < 0 || goals < 0 ||
         cards < 0 || (gamesPlayed == 0 && (goals > 0 || cards > 0))) {
-        throw InvalidArgumets();
+        throw InvalidArguments();
     }
 
     this->playerId = playerId;
@@ -62,8 +62,8 @@ void Player::setGoals(int goals) {
     this->goals = goals;
 }
 
-void Player::setCards(int cards) {
-    this->cards = cards;
+void Player::addCards(int cards) {
+    this->cards += cards;
 }
 
 void Player::setIsGoalKeeper(bool isGoalKeeper) {
