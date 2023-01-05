@@ -3,43 +3,54 @@
 
 #include "HashTable.h"
 #include "wet2util.h"
+#include "Player.h"
+#include "Team.h"
 
-// S - Set, M - Member
-template<class S, class M>
 class UnionFind {
 public:
     UnionFind();
-    UnionFind(const UnionFind<S, M>& uf) = delete;
-    UnionFind& operator=(const UnionFind<S, M>& uf) = delete;
+    UnionFind(const UnionFind& uf) = delete;
+    UnionFind& operator=(const UnionFind& uf) = delete;
     ~UnionFind() = default;
 
-    class Node {
-        int key;
-        M data;
-        Node* parent;
-        S set;
-        Pair<int, permutation_t> accuData;
+    class PlayerNode {
+        int playerId;
+        Player* player;
+        PlayerNode* parent;
+        Team* team;
+        int games;
+        permutation_t insertSpirit;
+        permutation_t extractSpirit;
 
     public:
-        Node(int key, M data, Node* parent, S set);
-        Node(const Node& node) = default;
-        Node& operator=(const Node& node) = default;
-        ~Node() = default;
+        PlayerNode(int playerId, Player* player, PlayerNode* parent, Team* team,
+                   int games, permutation_t& insertSpirit, permutation_t& extractSpirit);
+        PlayerNode(const PlayerNode& node) = default;
+        PlayerNode& operator=(const PlayerNode& node) = default;
+        ~PlayerNode() = default;
 
-        void changeSet(S newSet);
-        M getData();
-        Node* getParent();
-        int getNumData();
+        void setTeam(Team* newTeam);
+        Player* getPlayer() const;
+        PlayerNode* getParent() const;
+        int getGames() const;
+        Team* getTeam() const;
+        permutation_t getInsertSpirit() const;
+        permutation_t getExtractSpirit() const;
+        void setInsertSpirit(const permutation_t& inSpirit);
+        void setExtractSpirit(const permutation_t& exSpirit);
+        void setParent(PlayerNode* node);
     };
 
-    Node* insert(int memberKey, M memberData, Node* parent, int setKey, S setData);
-    void unite(int set1Key, int set2Key);
-    S find(int memberKey);
-    M get(int memberKey);
-    Node* getNode(int memberKey);
+    PlayerNode* insert(int playerId, Player* player,
+                       int teamId, Team* team, int initGames);
+    void unite(Team* buyer, Team* bought);
+    Team* find(int memberKey);
+    Player* get(int memberKey) const;
+    PlayerNode* getNode(int memberKey);
+    bool isExist(int playerId) const;
 
 private:
-    HashTable<Node*> nodes;
+    HashTable<PlayerNode*> nodes;
     int numNodes;
     int numSets;
 
@@ -47,56 +58,6 @@ private:
     static const int INIT_NODES_TABLE_VALUE = 2;
 };
 
-template<class S, class M>
-UnionFind<S, M>::UnionFind():
-    numNodes(0),
-    numSets(0),
-    nodes(INIT_NODES_TABLE_VALUE)
-{}
 
-template<class S, class M>
-UnionFind<S, M>::Node::Node(int key, M data, Node *parent, S set):
-    key(key),
-    data(data),
-    parent(parent)
-{}
-
-template<class S, class M>
-typename UnionFind<S, M>::Node* UnionFind<S, M>::insert(int memberKey, M memberData, Node* parent, int setKey, S setData) {
-    Node* node = new Node(memberKey, memberData, parent, setKey, setData);
-    nodes.insert(memberKey, node);
-
-    return node;
-}
-
-template<class S, class M>
-void UnionFind<S, M>::Node::changeSet(S newSet) {
-    set = newSet;
-}
-
-template<class S, class M>
-M UnionFind<S, M>::Node::getData() {
-    return data;
-}
-
-template<class S, class M>
-M UnionFind<S, M>::get(int memberKey) {
-    return nodes.lookup(memberKey)->getData();
-}
-
-template<class S, class M>
-typename UnionFind<S, M>::Node* UnionFind<S, M>::getNode(int memberKey) {
-    return nodes.lookup(memberKey);
-}
-
-template<class S, class M>
-typename UnionFind<S, M>::Node* UnionFind<S, M>::Node::getParent() {
-    return parent;
-}
-
-template<class S, class M>
-int UnionFind<S, M>::Node::getNumData() {
-    return accuData.getKey();
-}
 
 #endif //MIVNEI_EX2_UNIONFIND_H

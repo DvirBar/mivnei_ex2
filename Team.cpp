@@ -13,12 +13,14 @@ Team::Team(int teamId, int points) :
         nextValidRank(nullptr),
         prevValidRank(nullptr),
         totalGamesPlayed(0),
+        numPlayers(0),
+        head(nullptr),
         teamPlayersByID(),
         teamPlayersByStats()
 {}
 
 int Team::getNumPlayers() const {
-    return teamPlayersByID.getNumNodes();
+    return numPlayers;
 }
 
 int Team::getNumGoalKeepers() const {
@@ -47,6 +49,10 @@ void Team::setCards(int cards) {
 
 void Team::setGoals(int goals) {
     totalGoals += goals;
+}
+
+void Team::incrementNumPlayers() {
+    numPlayers++;
 }
 
 int Team::getTotalGoals() const {
@@ -91,57 +97,6 @@ void Team::uniteTopScorers(Team* team1, Team* team2) {
     else {
         setTopScorer(team2->getTopScorer());
     }
-}
-
-Team* Team::unite_teams(Team* team1, Team* team2, int newTeamId) {
-    Team* newTeam = new Team(newTeamId, team1->getTotalPoints() + team2->getTotalPoints());
-
-    // TODO: update stats
-    newTeam->setCards(team1->getTotalCards()+team2->getTotalCards());
-    newTeam->setGoals(team1->getTotalGoals()+team2->getTotalGoals());
-    newTeam->setGoalGoalKeepers(team1->getNumGoalKeepers()+team2->getNumGoalKeepers());
-    newTeam->uniteTopScorers(team1, team2);
-
-    int team1Size = team1->getNumPlayers();
-    int team2Size = team2->getNumPlayers();
-    int newArrSize = team1Size + team2Size;
-
-    if(newArrSize == 0) {
-        return newTeam;
-    }
-
-    Pair<Tuple, Player*>* newStatsArr = new Pair<Tuple, Player*>[newArrSize];
-    Pair<Tuple, Player*>* statsArr1 = new Pair<Tuple, Player*>[team1->getNumPlayers()];
-    Pair<Tuple, Player*>* statsArr2 = new Pair<Tuple, Player*>[team2->getNumPlayers()];
-    Pair<int, Player*>* newIdsArr = new Pair<int, Player*>[newArrSize];
-    Pair<int, Player*>* idsArr1 = new Pair<int, Player*>[team1->getNumPlayers()];
-    Pair<int, Player*>* idsArr2 = new Pair<int, Player*>[team2->getNumPlayers()];
-
-    team1->createStatsArray(statsArr1);
-    team2->createStatsArray(statsArr2);
-    team1->createIdsArray(idsArr1);
-    team2->createIdsArray(idsArr2);
-
-    AVLTree<Tuple, Player*>::mergeArrays(newStatsArr, newArrSize, statsArr1, team1Size, statsArr2, team2Size);
-    AVLTree<int, Player*>::mergeArrays(newIdsArr, newArrSize, idsArr1, team1Size, idsArr2, team2Size);
-
-    for(int i=0; i<newArrSize; i++) {
-        Player* curPlayer = newIdsArr[i].getValue();
-        curPlayer->setGamesPlayed(curPlayer->getNumPlayedGames());
-        curPlayer->setTeam(newTeam);
-    }
-
-    newTeam->fillStatsFromArray(newStatsArr, newArrSize);
-    newTeam->fillIdsFromArray(newIdsArr, newArrSize);
-
-    delete[] newStatsArr;
-    delete[] statsArr1;
-    delete[] statsArr2;
-    delete[] newIdsArr;
-    delete[] idsArr1;
-    delete[] idsArr2;
-
-    return newTeam;
 }
 
 void Team::createStatsArray(Pair<Tuple, Player*>* arr) {
@@ -209,6 +164,10 @@ void Team::setPrevValidRank(Team* prev) {
     prevValidRank = prev;
 }
 
+void Team::setHead(UnionFind::PlayerNode *newHead) {
+    head = newHead;
+}
+
 int Team::getTeamId() const {
     return teamId;
 }
@@ -225,7 +184,7 @@ int Team::getTotalStats() const {
     return totalPoints + totalGoals - totalCards;
 }
 
-typename UnionFind<Team*, Player*>::Node* Team::getHead() {
+typename UnionFind::PlayerNode* Team::getHead() {
     return head;
 }
 

@@ -11,7 +11,7 @@ class Team;
 
 class Player {
 public:
-    Player(int playerId, Team* team, int gamesPlayed, int goals,
+    Player(int playerId, const permutation_t& spirit, int ability, int gamesPlayed,
            int cards, bool goalKeeper);
 
     // playerId should be unique, so maybe we shouldn't allow copy?
@@ -22,32 +22,28 @@ public:
     int getId() const;
 
     // TODO: implement
-    int getNumPlayedGames() const;
     Team* getTeam() const;
     bool isGoalKeeper() const;
     Player* getRankNext() const;
     Player* getRankPrev() const;
-    int getGoals() const;
     int getCards() const;
-    void setGoals(int goals);
+    permutation_t getSpirit() const;
     void setCards(int cards);
     void setIsGoalKeeper(bool isGoalKeeper);
-    void setGamesPlayed(int gamesPlayed);
     void setTeam(Team* team);
-    void removeFromTeam();
+//    void removeFromTeam();
     void updateNextInRank(Player* next);
     void updatePrevInRank(Player* prev);
     const Tuple getStatsTuple() const;
 
 private:
     int playerId;
-    int gamesPlayed;
-    int goals;
     int cards;
+    int ability;
     bool goalKeeper;
-    Team* team;
     Player* prevRank;
     Player* nextRank;
+    permutation_t spirit;
 };
 
 #endif // PLAYER_H_

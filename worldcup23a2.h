@@ -26,8 +26,16 @@
 class world_cup_t {
 private:
 	AVLTree<int, Team*> teams;
-    UnionFind<Team*, Player*> players;
-	
+    UnionFind players;
+
+    void addPlayerAux(int playerId, int teamId,
+                      const permutation_t &spirit, int gamesPlayed,
+                      int ability, int cards, bool goalKeeper);
+
+    permutation_t getPartialSpiritAux(int playerId);
+
+    bool isActive(int playerId);
+
 public:
 	// <DO-NOT-MODIFY> {
 	

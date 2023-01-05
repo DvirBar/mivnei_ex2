@@ -32,7 +32,7 @@ public:
     int getTotalPoints() const;
     int getTotalGamesPlayed() const;
     int getId() const;
-    UnionFind<Team*, Player*>::Node* getHead();
+    UnionFind::PlayerNode* getHead();
     const AVLTree<Tuple, Player*>& getStatsTree() const;
     StatusType get_all_players(int* const output);
     void addPlayer(Player* player);
@@ -55,6 +55,8 @@ public:
     void setPrevValidRank(Team* prev);
     void setGamesPlayed(int games);
     void setGoalGoalKeepers(int numGoalkeeper);
+    void setHead(UnionFind::PlayerNode* newHead);
+    void incrementNumPlayers();
     Player* findPlayerById(int playerId);
     bool isEmpty();
     static Team* unite_teams(Team* team1, Team* team2, int newTeamId);
@@ -70,13 +72,14 @@ private:
     int totalCards;
     int totalGoals;
     int numGoalkeepers;
+    int numPlayers;
     Player* teamTopScorer;
     Team* nextValidRank;
     Team* prevValidRank;
     int totalGamesPlayed;
     AVLTree<int, Player*> teamPlayersByID;
     AVLTree<Tuple, Player*> teamPlayersByStats;
-    UnionFind<Team*, Player*>::Node* head;
+    UnionFind::PlayerNode* head;
 
 
     void uniteTopScorers(Team* team1, Team* team2);
