@@ -14,7 +14,7 @@ class HashTable {
     int numElements;
     int tableSize;
 
-    int hash(int key);
+    int hash(int key) const;
     void createAndCopyTable(int newSize);
     void expandTable();
     void shrinkTable();
@@ -35,8 +35,9 @@ public:
     ~HashTable();
 
     void insert(int key, T data);
-    T lookup(int key);
+    T lookup(int key) const;
     T remove(int key);
+    int size();
     void print();
 };
 
@@ -59,7 +60,7 @@ HashTable<T>::~HashTable() {
 }
 
 template<class T>
-int HashTable<T>::hash(int key) {
+int HashTable<T>::hash(int key) const {
     return key%tableSize;
 }
 
@@ -116,7 +117,7 @@ void HashTable<T>::createTableFromArray(Pair<int, T>* array, AVLTree<int, T>* ne
 }
 
 template<class T>
-T HashTable<T>::lookup(int key) {
+T HashTable<T>::lookup(int key) const {
     table[hash(key)].search(key);
 }
 
@@ -149,6 +150,11 @@ void HashTable<T>::print() {
         }
         cout << "-------------------------------" << endl;
     }
+}
+
+template<class T>
+int HashTable<T>::size() {
+    return numElements;
 }
 
 #endif //MIVNEI_EX2_HASHTABLE_H
