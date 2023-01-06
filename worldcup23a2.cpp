@@ -40,6 +40,7 @@ StatusType world_cup_t::remove_team(int teamId)
         Team* team = teams.search(teamId);
         team->getHead()->setTeam(nullptr);
         teams.remove(teamId);
+        teamsByAbility.remove(Pair<int, int>(team->getTotalTeamAbility(), teamId));
         delete team;
         return StatusType::SUCCESS;
     } catch(const KeyNotFound& error) {
