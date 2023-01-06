@@ -26,7 +26,6 @@
 class world_cup_t {
 private:
 	AVLTree<int, Team*> teams;
-    UnionFind<Team*, Player*> players;
     RankTree<Pair<int,int>, Team*> teamsByAbility;
     static const int WINNER_PTS = 3;
     static const int TIE_PTS = 1;
@@ -35,7 +34,16 @@ private:
     static const int FIRST_BY_SPIRIT = 2;
     static const int SECOND_BY_ABILITY = 3;
     static const int SECOND_BY_SPIRIT = 4;
-	
+
+    UnionFind players;
+
+    void addPlayerAux(int playerId, int teamId,
+                      const permutation_t &spirit, int gamesPlayed,
+                      int ability, int cards, bool goalKeeper);
+
+    permutation_t getPartialSpiritAux(int playerId);
+
+    bool isActive(int playerId);
 public:
 	// <DO-NOT-MODIFY> {
 	
