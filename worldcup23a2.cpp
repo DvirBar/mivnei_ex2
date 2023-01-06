@@ -1,13 +1,19 @@
 #include "worldcup23a2.h"
 
-world_cup_t::world_cup_t()
-{
-	// TODO: Your code goes here
-}
+world_cup_t::world_cup_t():
+    teams(),
+    teamsByAbility(),
+    players()
+{ }
 
 world_cup_t::~world_cup_t()
 {
-	// TODO: Your code goes here
+	Pair<int, Team*>* teamsArray = new Pair<int, Team*>[teams.getNumNodes()];
+    for(int i = 0; i < teams.getNumNodes(); i++) {
+        delete teamsArray[i].getValue();
+    }
+
+    delete[] teamsArray;
 }
 
 StatusType world_cup_t::add_team(int teamId)
@@ -282,8 +288,22 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2)
         return StatusType::INVALID_INPUT;
 
     try {
-        Team* checkTeam1 = teams.search(teamId1);
-        Team* checkTeam2 = teams.search(teamId2);
+        Team* buyingTeam = teams.search(teamId1);
+        Team* boughtTeam = teams.search(teamId2);
+        teams.remove(teamId2);
+
+        teamsByAbility.remove(Pair<int,int>(buyingTeam->getTotalPlayerAbility(), teamId1));
+        teamsByAbility.remove(Pair<int, int>(boughtTeam->getTotalPlayerAbility(), teamId2));
+
+        buyingTeam->addPoints(boughtTeam->getTotalPoints());
+        buyingTeam->addAbility(boughtTeam->getTotalPlayerAbility());
+        int buyingTeamGoalKeepers = buyingTeam->getNumGoalKeepers();
+        buyingTeam->setGoalKeepers(buyingTeamGoalKeepers + boughtTeam->getNumGoalKeepers());
+
+        players.unite(buyingTeam, boughtTeam);
+        teamsByAbility.insert(Pair<int, int>(buyingTeam->getTotalPlayerAbility(), teamId1), buyingTeam);
+
+        delete boughtTeam;
     }
 
     catch(KeyNotFound& keyNotFound) {

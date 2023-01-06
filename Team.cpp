@@ -31,7 +31,7 @@ void Team::addGame() {
     totalGamesPlayed++;
 }
 
-void Team::setGoalGoalKeepers(int numGoalkeeper) {
+void Team::setGoalKeepers(int numGoalkeeper) {
     this->numGoalkeepers = numGoalkeeper;
 }
 

@@ -8,6 +8,7 @@
 
 // Forward declaration
 class Team;
+class Player;
 
 class UnionFind {
 public:
@@ -35,6 +36,7 @@ public:
         Player* getPlayer() const;
         PlayerNode* getParent() const;
         int getGames() const;
+        void setGames(int gamesToSet);
         Team* getTeam() const;
         permutation_t getInsertSpirit() const;
         permutation_t getExtractSpirit() const;
@@ -60,7 +62,7 @@ private:
     static const int INIT_SETS_TABLE_VALUE = 2;
     static const int INIT_NODES_TABLE_VALUE = 2;
 
-    static void compressPaths(PlayerNode* node, PlayerNode* root);
+    static void compressPaths(PlayerNode* node, PlayerNode* root, int totalSum, const permutation_t& totalPermutation);
 };
 
 #endif //MIVNEI_EX2_UNIONFIND_H

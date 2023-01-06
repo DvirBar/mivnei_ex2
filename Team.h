@@ -43,7 +43,7 @@ public:
 
     int getTotalStats() const;
 
-    void setGoalGoalKeepers(int numGoalkeeper);
+    void setGoalKeepers(int numGoalkeeper);
 
     void setHead(UnionFind::PlayerNode* newHead);
     void incrementNumPlayers();
