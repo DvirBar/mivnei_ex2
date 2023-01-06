@@ -157,7 +157,7 @@ typename RankTree<K, T>::RankNode* RankTree<K, T>::RankNode::RRrotation()
 
     // Update weight
     int newParentWeight = this->weight;
-    this->weight = 1+rightGrandChild->weight+leftChild->weight;
+    this->weight = 1+getNodeWeight(rightGrandChild)+getNodeHeight(leftChild);
     newParent->weight = newParentWeight;
 
     return newParent;
@@ -177,7 +177,7 @@ typename RankTree<K, T>::RankNode* RankTree<K, T>::RankNode::LLrotation()
 
     // Update weight
     int newParentWeight = this->weight;
-    this->weight = 1+newLeftGrandChild->weight+rightChild->weight;
+    this->weight = 1+getNodeWeight(newLeftGrandChild)+getNodeWeight(rightChild);
     newParent->weight = newParentWeight;
 
     return newParent;
