@@ -200,12 +200,12 @@ output_t<int> world_cup_t::get_team_points(int teamId)
 
 output_t<int> world_cup_t::get_ith_pointless_ability(int i)
 {
-	if(i < 0 || i > teams.getNumNodes()) {
+	if(i < 0 || i >= teams.getNumNodes()) {
         return output_t<int>(StatusType::FAILURE);
     }
 
     try {
-        return output_t<int>(teamsByAbility.Select(i)->getId());
+        return output_t<int>(teamsByAbility.Select(i + 1)->getId());
     }
 
     catch (KeyNotFound& keyNotFound) {
