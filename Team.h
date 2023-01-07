@@ -44,6 +44,7 @@ public:
     void setGoalKeepers(int numGoalkeeper);
 
     void setHead(PlayerNode* newHead);
+    void addNumPlayers(int playersToAdd);
     void incrementNumPlayers();
     void incrementNumGoalKeepers();
 

@@ -157,7 +157,7 @@ typename RankTree<K, T>::RankNode* RankTree<K, T>::RankNode::RRrotation()
 
     // Update weight
     int newParentWeight = this->weight;
-    this->weight = 1+getNodeWeight(rightGrandChild)+getNodeHeight(leftChild);
+    this->weight = 1+getNodeWeight(rightGrandChild)+getNodeWeight(leftChild);
     newParent->weight = newParentWeight;
 
     return newParent;
@@ -495,7 +495,6 @@ bool RankTree<K, T>::isExist(const K &key) const {
     }
     return true;
 }
-
 template<class K, class T>
 void RankTree<K, T>::mergeArrays(Pair<K, T>* newArr, int newArrSize, Pair<K, T>* arr1,
                                  int arr1Size, Pair<K, T>* arr2, int arr2Size) {

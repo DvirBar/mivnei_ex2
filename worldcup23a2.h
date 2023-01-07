@@ -40,6 +40,8 @@ private:
                       const permutation_t &spirit, int gamesPlayed,
                       int ability, int cards, bool goalKeeper);
 
+    void removeTeamAux(Team* team);
+
     bool isActive(int playerId);
 
     static Pair<int, int> getAbilityKey(Team* team);

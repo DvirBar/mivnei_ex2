@@ -21,7 +21,7 @@ class PlayerNode {
     permutation_t extractSpirit;
 
 public:
-    PlayerNode(Player* player, PlayerNode* parent, Team* team,
+    PlayerNode(Player* player, PlayerNode* parent,
                int games, permutation_t& insertSpirit, permutation_t& extractSpirit);
     PlayerNode(const PlayerNode& node) = default;
     PlayerNode& operator=(const PlayerNode& node) = default;

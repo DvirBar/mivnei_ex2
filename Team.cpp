@@ -96,6 +96,10 @@ int Team::getTotalStats() const {
     return totalPoints + totalGoals - totalCards;
 }
 
+void Team::addNumPlayers(int playersToAdd) {
+    numPlayers += playersToAdd;
+}
+
 PlayerNode* Team::getHead() {
     return head;
 }

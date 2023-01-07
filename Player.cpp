@@ -3,8 +3,9 @@
 #include "Exception.h"
 #include "Tuple.h"
 
-Player::Player(const permutation_t& spirit, int gamesPlayed,
+Player::Player(int playerId, const permutation_t& spirit, int gamesPlayed,
         int cards, bool goalKeeper):
+        playerId(playerId),
         cards(cards),
         goalKeeper(goalKeeper),
         spirit(spirit)

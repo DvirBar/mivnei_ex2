@@ -13,7 +13,7 @@ class UnionFind;
 
 class Player {
 public:
-    Player(const permutation_t& spirit, int gamesPlayed,
+    Player(int playerId, const permutation_t& spirit, int gamesPlayed,
            int cards, bool goalKeeper);
 
     Player(const Player &player) = default;
@@ -30,6 +30,7 @@ public:
 //    void removeFromTeam();
 
 private:
+    int playerId;
     int cards;
     bool goalKeeper;
     permutation_t spirit;

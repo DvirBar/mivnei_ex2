@@ -4,11 +4,11 @@
 
 #include "PlayerNode.h"
 
-PlayerNode::PlayerNode(Player* player, PlayerNode* parent, Team* team, int games, permutation_t& insertSpirit,
+PlayerNode::PlayerNode(Player* player, PlayerNode* parent, int games, permutation_t& insertSpirit,
                        permutation_t& extractSpirit):
         player(player),
         parent(parent),
-        team(team),
+        team(nullptr),
         games(games),
         insertSpirit(insertSpirit),
         extractSpirit(extractSpirit)

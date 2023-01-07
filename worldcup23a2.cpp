@@ -48,6 +48,16 @@ StatusType world_cup_t::add_team(int teamId)
     return StatusType::SUCCESS;
 }
 
+void world_cup_t::removeTeamAux(Team *team) {
+    if(team->getNumPlayers() > 0) {
+        team->getHead()->setTeam(nullptr);
+    }
+
+    teams.remove(team->getId());
+    teamsByAbility.remove(getAbilityKey(team));
+    delete team;
+}
+
 StatusType world_cup_t::remove_team(int teamId)
 {
     if(teamId <= 0) {
@@ -56,13 +66,8 @@ StatusType world_cup_t::remove_team(int teamId)
 
     try {
         Team* team = teams.search(teamId);
-        if(team->getNumPlayers() > 0) {
-            team->getHead()->setTeam(nullptr);
-        }
 
-        teams.remove(teamId);
-        teamsByAbility.remove(getAbilityKey(team));
-        delete team;
+        removeTeamAux(team);
         return StatusType::SUCCESS;
     } catch(const KeyNotFound& error) {
         return StatusType::FAILURE;
@@ -74,7 +79,7 @@ StatusType world_cup_t::remove_team(int teamId)
 void world_cup_t::addPlayerAux(int playerId, int teamId,
                                const permutation_t &spirit, int gamesPlayed,
                                int ability, int cards, bool goalKeeper) {
-    auto player = new Player(spirit, gamesPlayed, cards, goalKeeper);
+    auto player = new Player(playerId, spirit, gamesPlayed, cards, goalKeeper);
     Team* team = teams.search(teamId);
 
     players.insert(playerId, player, team, gamesPlayed);
@@ -104,6 +109,7 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
     try {
         // TODO: we're ignoring KeyNotFound because we check it earlier
         addPlayerAux(playerId, teamId, spirit, gamesPlayed, ability, cards, goalKeeper);
+
         return StatusType::SUCCESS;
     } catch (const bad_alloc& error) {
         return StatusType::ALLOCATION_ERROR;
@@ -192,6 +198,7 @@ StatusType world_cup_t::add_player_cards(int playerId, int cards)
     if(playerId <= 0 || cards < 0) {
         return StatusType::INVALID_INPUT;
     }
+
     try {
         Player* checkPlayer = players.get(playerId);
         if(players.find(playerId) == nullptr) {
@@ -296,7 +303,12 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2)
     try {
         Team* buyingTeam = teams.search(teamId1);
         Team* boughtTeam = teams.search(teamId2);
+
         teams.remove(teamId2);
+
+        if(boughtTeam->getNumPlayers() > 0) {
+            boughtTeam->getHead()->setTeam(nullptr);
+        }
 
         teamsByAbility.remove(getAbilityKey(buyingTeam));
         teamsByAbility.remove(getAbilityKey(boughtTeam));
@@ -305,6 +317,7 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2)
         buyingTeam->addAbility(boughtTeam->getTotalPlayerAbility());
         int buyingTeamGoalKeepers = buyingTeam->getNumGoalKeepers();
         buyingTeam->setGoalKeepers(buyingTeamGoalKeepers + boughtTeam->getNumGoalKeepers());
+        buyingTeam->addNumPlayers(boughtTeam->getNumPlayers());
 
         players.unite(buyingTeam, boughtTeam);
         teamsByAbility.insert(getAbilityKey(buyingTeam), buyingTeam);

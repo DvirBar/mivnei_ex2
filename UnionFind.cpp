@@ -35,12 +35,13 @@ PlayerNode* UnionFind::insert(int playerId, Player* player, Team* team, int init
         games = initGames - head->getGames();
     }
 
-    auto node = new PlayerNode(player, head, team, games,
+    auto node = new PlayerNode(player, head, games,
                                insertSpirit, extractSpirit);
     nodes.insert(playerId, node);
 
     if(team->getNumPlayers() == 0) {
         team->setHead(node);
+        node->setTeam(team);
     }
 
     return node;
@@ -80,11 +81,11 @@ void UnionFind::unite(Team* buyer, Team* bought) {
         buyer->getHead()->setTeam(buyer);
         return;
     }
-
+    if(buyer->getId() == 70841) {
+        cout << "hello" << endl;
+    }
     if(buyer->getNumPlayers() >= bought->getNumPlayers()) {
         // TODO: split to separated functions
-        bought->setHead(buyerHead);
-
         boughtHead->setParent(buyerHead);
         boughtHead->setGames(boughtHead->getGames()-buyerHead->getGames());
 
