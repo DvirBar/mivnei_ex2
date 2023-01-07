@@ -5,62 +5,35 @@
 #include "wet2util.h"
 #include "Player.h"
 #include "Team.h"
+#include "PlayerNode.h"
 
-// Forward declaration
 class Team;
+class PlayerNode;
+class Player;
 
 class UnionFind {
 public:
     UnionFind();
     UnionFind(const UnionFind& uf) = delete;
     UnionFind& operator=(const UnionFind& uf) = delete;
-    ~UnionFind() = default;
+    ~UnionFind();
 
-    class PlayerNode {
-        int playerId;
-        Player* player;
-        PlayerNode* parent;
-        Team* team;
-        int games;
-        permutation_t insertSpirit;
-        permutation_t extractSpirit;
-
-    public:
-        PlayerNode(int playerId, Player* player, PlayerNode* parent, Team* team,
-                   int games, permutation_t& insertSpirit, permutation_t& extractSpirit);
-        PlayerNode(const PlayerNode& node) = default;
-        PlayerNode& operator=(const PlayerNode& node) = default;
-        ~PlayerNode() = default;
-        void setTeam(Team* newTeam);
-        Player* getPlayer() const;
-        PlayerNode* getParent() const;
-        int getGames() const;
-        Team* getTeam() const;
-        permutation_t getInsertSpirit() const;
-        permutation_t getExtractSpirit() const;
-        void setInsertSpirit(const permutation_t& inSpirit);
-        void setExtractSpirit(const permutation_t& exSpirit);
-        void setParent(PlayerNode* node);
-        void incrementGames();
-    };
-
-    PlayerNode* insert(int playerId, Player* player,
-                       int teamId, Team* team, int initGames);
+    PlayerNode* insert(int playerId, Player* player, Team* team, int initGames);
     void unite(Team* buyer, Team* bought);
-    Team* find(int memberKey);
-    Player* get(int memberKey) const;
-    PlayerNode* getNode(int memberKey);
+    Team* find(int playerId);
+    int findGames(int playerId);
+    permutation_t findPartialSpirit(int playerId);
+    PlayerNode* findAux(int playerId, int* summedNumGames, permutation_t* multipliedPermutation, PlayerNode* lookedUpNode);
+    Player* get(int playerId) const;
+    PlayerNode* getNode(int playerId);
     bool isExist(int playerId) const;
 
 private:
     HashTable<PlayerNode*> nodes;
-    int numNodes;
-    int numSets;
-
-    static const int INIT_SETS_TABLE_VALUE = 2;
+    
     static const int INIT_NODES_TABLE_VALUE = 2;
 
-    static void compressPaths(PlayerNode* node, PlayerNode* root);
+    static void compressPaths(PlayerNode* node, PlayerNode* root, int totalSum, const permutation_t& totalPermutation);
 };
 
 #endif //MIVNEI_EX2_UNIONFIND_H

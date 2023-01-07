@@ -8,6 +8,7 @@ Team::Team(int teamId) :
         totalPoints(0),
         totalCards(0),
         totalGoals(0),
+        totalPlayerAbility(0),
         numGoalkeepers(0),
         totalGamesPlayed(0),
         teamSpirit(permutation_t::neutral()),
@@ -31,7 +32,7 @@ void Team::addGame() {
     totalGamesPlayed++;
 }
 
-void Team::setGoalGoalKeepers(int numGoalkeeper) {
+void Team::setGoalKeepers(int numGoalkeeper) {
     this->numGoalkeepers = numGoalkeeper;
 }
 
@@ -45,6 +46,10 @@ void Team::setGoals(int goals) {
 
 void Team::incrementNumPlayers() {
     numPlayers++;
+}
+
+void Team::incrementNumGoalKeepers() {
+    numGoalkeepers++;
 }
 
 int Team::getTotalGoals() const {
@@ -79,11 +84,15 @@ int Team::getTotalTeamAbility() const {
     return totalPlayerAbility + totalPoints;
 }
 
+int Team::getTeamAbility() const {
+    return totalPlayerAbility;
+}
+
 int Team::getSpiritStrength() const {
     return teamSpirit.strength();
 }
 
-void Team::setHead(UnionFind::PlayerNode *newHead) {
+void Team::setHead(PlayerNode *newHead) {
     head = newHead;
 }
 
@@ -91,7 +100,7 @@ int Team::getTotalStats() const {
     return totalPoints + totalGoals - totalCards;
 }
 
-typename UnionFind::PlayerNode* Team::getHead() {
+PlayerNode* Team::getHead() {
     return head;
 }
 

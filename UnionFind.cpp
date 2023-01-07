@@ -1,24 +1,24 @@
 #include "UnionFind.h"
 
 UnionFind::UnionFind():
-        numNodes(0),
-        numSets(0),
-        nodes(INIT_NODES_TABLE_VALUE)
+    nodes(INIT_NODES_TABLE_VALUE)
 {}
 
-UnionFind::PlayerNode::PlayerNode(int playerId, Player* player, PlayerNode* parent, Team* team,
-                              int games, permutation_t& insertSpirit, permutation_t& extractSpirit):
-        playerId(playerId),
-        player(player),
-        parent(parent),
-        team(team),
-        games(games),
-        insertSpirit(insertSpirit),
-        extractSpirit(extractSpirit)
-{}
+UnionFind::~UnionFind() {
+    auto nodesArray = new Pair<int, PlayerNode*>[nodes.size()];
 
-typename UnionFind::PlayerNode* UnionFind::insert(int playerId, Player* player,
-                                int teamId, Team* team, int initGames) {
+    nodes.extractToArray(nodesArray);
+    PlayerNode* currentNode;
+    for(int i=0; i<nodes.size(); i++) {
+        currentNode = nodesArray[i].getValue();
+        delete currentNode->getPlayer();
+        delete currentNode;
+    }
+
+    delete[] nodesArray;
+}
+
+PlayerNode* UnionFind::insert(int playerId, Player* player, Team* team, int initGames) {
     PlayerNode* head = team->getHead();
     int games = initGames;
     permutation_t insertSpirit = permutation_t::neutral();
@@ -35,56 +35,28 @@ typename UnionFind::PlayerNode* UnionFind::insert(int playerId, Player* player,
         games = initGames - head->getGames();
     }
 
-    auto node = new PlayerNode(playerId, player, head, team, games,
+    auto node = new PlayerNode(player, head, team, games,
                                insertSpirit, extractSpirit);
     nodes.insert(playerId, node);
+
+    if(team->getNumPlayers() == 0) {
+        team->setHead(node);
+    }
 
     return node;
 }
 
-void UnionFind::PlayerNode::setTeam(Team* newTeam) {
-    team = newTeam;
-}
 
-Player* UnionFind::PlayerNode::getPlayer() const{
-    return player;
-}
 
 Player* UnionFind::get(int playerId) const {
     return nodes.lookup(playerId)->getPlayer();
 }
 
-typename UnionFind::PlayerNode* UnionFind::getNode(int playerId) {
+PlayerNode* UnionFind::getNode(int playerId) {
     return nodes.lookup(playerId);
 }
 
-typename UnionFind::PlayerNode* UnionFind::PlayerNode::getParent() const {
-    return parent;
-}
 
-int UnionFind::PlayerNode::getGames() const {
-    return games;
-}
-
-permutation_t UnionFind::PlayerNode::getInsertSpirit() const {
-    return insertSpirit;
-}
-
-permutation_t UnionFind::PlayerNode::getExtractSpirit() const {
-    return extractSpirit;
-}
-
-Team* UnionFind::PlayerNode::getTeam() const {
-    return team;
-}
-
-void UnionFind::PlayerNode::setInsertSpirit(const permutation_t& inSpirit) {
-    insertSpirit = inSpirit;
-}
-
-void UnionFind::PlayerNode::setExtractSpirit(const permutation_t& exSpirit) {
-    extractSpirit = exSpirit;
-}
 
 bool UnionFind::isExist(int playerId) const {
     try {
@@ -99,10 +71,14 @@ void UnionFind::unite(Team* buyer, Team* bought) {
     PlayerNode* buyerHead = buyer->getHead();
     PlayerNode* boughtHead = bought->getHead();
 
-    if(buyer->getNumPlayers() > bought->getNumPlayers()) {
+
+    if(buyer->getNumPlayers() >= bought->getNumPlayers()) {
         // TODO: split to separated functions
         bought->setHead(buyerHead);
+
         boughtHead->setParent(buyerHead);
+        boughtHead->setGames(boughtHead->getGames()-buyerHead->getGames());
+
         permutation_t buyerInSpirit = buyerHead->getInsertSpirit();
         permutation_t boughtInSpirit = boughtHead->getInsertSpirit();
         permutation_t boughtExSpirit = boughtHead->getExtractSpirit();
@@ -113,6 +89,7 @@ void UnionFind::unite(Team* buyer, Team* bought) {
 //       AKA IF: buyer->getNumPlayers() <= bought->getNumPlayers()
         buyer->setHead(boughtHead);
         buyerHead->setParent(boughtHead);
+        buyerHead->setGames(buyerHead->getGames()-boughtHead->getGames());
 
         permutation_t buyerExSpirit = buyerHead->getExtractSpirit();
         permutation_t buyerInSpirit = buyerHead->getInsertSpirit();
@@ -123,34 +100,74 @@ void UnionFind::unite(Team* buyer, Team* bought) {
     }
 }
 
-void UnionFind::PlayerNode::setParent(PlayerNode* node) {
-    parent = node;
-}
 
-Team* UnionFind::find(int memberKey) {
-    PlayerNode* lookedUpNode = nodes.lookup(memberKey);
-    PlayerNode* tempNode = lookedUpNode;
 
-    while(tempNode->getParent() != nullptr) {
-        tempNode = tempNode->getParent();
-    }
+Team* UnionFind::find(int playerId) {
+    PlayerNode* lookedUpNode = nodes.lookup(playerId);
+    int summedNumGames = 0;
+    permutation_t multipliedPermutation = permutation_t::neutral();
+    PlayerNode* root = findAux(playerId, &summedNumGames, &multipliedPermutation, lookedUpNode);
 
-    PlayerNode* root = tempNode;
-    tempNode = lookedUpNode;
-    compressPaths(tempNode, root);
+    compressPaths(lookedUpNode, root, summedNumGames, multipliedPermutation);
 
     return root->getTeam();
 }
 
-void UnionFind::compressPaths(PlayerNode *node, PlayerNode *root) {
-    PlayerNode* prevNode;
-    while(node->getParent() != nullptr) {
-        prevNode = node;
-        node = node->getParent();
-        prevNode->setParent(root);
+PlayerNode* UnionFind::findAux(int playerId, int* summedNumGames, permutation_t* multipliedPermutation, PlayerNode* lookedUpNode) {
+    *summedNumGames = 0;
+    *multipliedPermutation = permutation_t::neutral();
+
+    while(lookedUpNode->getParent() != nullptr) {
+        *summedNumGames += lookedUpNode->getGames();
+        *multipliedPermutation = *multipliedPermutation * lookedUpNode->getExtractSpirit();
+        lookedUpNode = lookedUpNode->getParent();
     }
+
+    return lookedUpNode;
 }
 
-void UnionFind::PlayerNode::incrementGames() {
-    games++;
+int UnionFind::findGames(int playerId) {
+    PlayerNode* lookedUpNode = nodes.lookup(playerId);
+    int summedNumGames = 0;
+    permutation_t multipliedPermutation = permutation_t::neutral();
+    PlayerNode* root = findAux(playerId, &summedNumGames, &multipliedPermutation, lookedUpNode);
+
+    compressPaths(lookedUpNode, root, summedNumGames, multipliedPermutation);
+
+    return summedNumGames+root->getGames();
+}
+
+permutation_t UnionFind::findPartialSpirit(int playerId) {
+    PlayerNode* lookedUpNode = nodes.lookup(playerId);
+    int summedNumGames = 0;
+    permutation_t multipliedPermutation = permutation_t::neutral();
+    PlayerNode* root = findAux(playerId, &summedNumGames, &multipliedPermutation, lookedUpNode);
+
+    compressPaths(lookedUpNode, root, summedNumGames, multipliedPermutation);
+
+    return root->getExtractSpirit()*multipliedPermutation;
+}
+
+
+void UnionFind::compressPaths(PlayerNode *node, PlayerNode *root, int totalSum, const permutation_t& totalPermutation) {
+    PlayerNode* prevNode;
+    int sumToSubtract = 0, currentGames = 0;
+    permutation_t currentPermutation = permutation_t::neutral();
+    permutation_t permutationToSubtract = permutation_t::neutral();
+
+    while(node->getParent() != nullptr) {
+        prevNode = node;
+
+        node = node->getParent();
+
+        currentGames = prevNode->getGames();
+        prevNode->setGames(totalSum - sumToSubtract);
+        sumToSubtract += currentGames;
+
+        currentPermutation = prevNode->getExtractSpirit();
+        prevNode->setExtractSpirit(totalPermutation * permutationToSubtract.inv());
+        permutationToSubtract = permutationToSubtract * currentPermutation;
+
+        prevNode->setParent(root);
+    }
 }

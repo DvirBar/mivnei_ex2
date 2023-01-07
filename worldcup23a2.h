@@ -18,7 +18,6 @@
 #include "wet2util.h"
 #include "AVLTree.h"
 #include "RankTree.h"
-#include "DynamicArray.h"
 #include "Player.h"
 #include "Team.h"
 #include "UnionFind.h"
@@ -27,21 +26,19 @@ class world_cup_t {
 private:
 	AVLTree<int, Team*> teams;
     RankTree<Pair<int,int>, Team*> teamsByAbility;
-    static const int WINNER_PTS = 3;
-    static const int TIE_PTS = 1;
-    static const int TIE = 0;
-    static const int FIRST_BY_ABILITY = 1;
-    static const int FIRST_BY_SPIRIT = 2;
-    static const int SECOND_BY_ABILITY = 3;
-    static const int SECOND_BY_SPIRIT = 4;
-
     UnionFind players;
+    static const int WINNER_PTS;
+    static const int TIE_PTS;
+    static const int TIE;
+    static const int FIRST_BY_ABILITY;
+    static const int FIRST_BY_SPIRIT;
+    static const int SECOND_BY_ABILITY;
+    static const int SECOND_BY_SPIRIT;
+
 
     void addPlayerAux(int playerId, int teamId,
                       const permutation_t &spirit, int gamesPlayed,
                       int ability, int cards, bool goalKeeper);
-
-    permutation_t getPartialSpiritAux(int playerId);
 
     bool isActive(int playerId);
 public:

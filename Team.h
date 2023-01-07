@@ -7,17 +7,19 @@
 #include "Player.h"
 #include "Tuple.h"
 #include "UnionFind.h"
+#include "PlayerNode.h"
 
 using namespace std;
 
-// Forward declaration to break circular dependancy
+// Forward declaration to break circular dependency
 class UnionFind;
+class PlayerNode;
 class Player;
 
 class Team {
 public:
-    Team(int teamId);
-    Team(const Team &team);
+    explicit Team(int teamId);
+    Team(const Team &team) = default;
     ~Team() = default;
 
     void addPoints(int pointsToAdd);
@@ -32,23 +34,19 @@ public:
     int getId() const;
     int getTotalPlayerAbility() const;
     int getTotalTeamAbility() const;
+    int getTeamAbility() const;
     int getSpiritStrength() const;
     int getNumPlayers() const;
     void addAbility(const int abilityToAdd); // Can also be a negative value
-    UnionFind::PlayerNode* getHead();
-    const AVLTree<Tuple, Player*>& getStatsTree() const;
-    StatusType get_all_players(int* const output);
-    void addPlayer(Player* player);
-    void removePlayer(int playerId);
+    PlayerNode* getHead();
 
     int getTotalStats() const;
 
-    void setGoalGoalKeepers(int numGoalkeeper);
+    void setGoalKeepers(int numGoalkeeper);
 
-    void setHead(UnionFind::PlayerNode* newHead);
+    void setHead(PlayerNode* newHead);
     void incrementNumPlayers();
-    Player* findPlayerById(int playerId);
-    bool isEmpty();
+    void incrementNumGoalKeepers();
 
     class TeamNotFound: public exception{};
 private:
@@ -61,10 +59,7 @@ private:
     int totalGamesPlayed;
     permutation_t teamSpirit;
     int numPlayers;
-    Player* teamTopScorer;
-    Team* nextValidRank;
-    Team* prevValidRank;
-    UnionFind::PlayerNode* head;
+    PlayerNode* head;
 };
 
 #endif // TEAM_H_

@@ -1,13 +1,29 @@
 #include "worldcup23a2.h"
+#include <iostream>
 
-world_cup_t::world_cup_t()
-{
-	// TODO: Your code goes here
-}
+const int world_cup_t::WINNER_PTS = 3;
+const int world_cup_t::TIE_PTS = 1;
+const int world_cup_t::TIE = 0;
+const int world_cup_t::FIRST_BY_ABILITY = 1;
+const int world_cup_t::FIRST_BY_SPIRIT = 2;
+const int world_cup_t::SECOND_BY_ABILITY = 3;
+const int world_cup_t::SECOND_BY_SPIRIT = 4;
+
+
+world_cup_t::world_cup_t():
+    teams(),
+    teamsByAbility(),
+    players()
+{ }
 
 world_cup_t::~world_cup_t()
 {
-	// TODO: Your code goes here
+	auto teamsArray = new Pair<int, Team*>[teams.getNumNodes()];
+    for(int i = 0; i < teams.getNumNodes(); i++) {
+        delete teamsArray[i].getValue();
+    }
+
+    delete[] teamsArray;
 }
 
 StatusType world_cup_t::add_team(int teamId)
@@ -38,9 +54,12 @@ StatusType world_cup_t::remove_team(int teamId)
 
     try {
         Team* team = teams.search(teamId);
-        team->getHead()->setTeam(nullptr);
+        if(team->getNumPlayers() > 0) {
+            team->getHead()->setTeam(nullptr);
+        }
+
         teams.remove(teamId);
-        teamsByAbility.remove(Pair<int, int>(team->getTotalTeamAbility(), teamId));
+        teamsByAbility.remove(Pair<int, int>(team->getTeamAbility(), teamId));
         delete team;
         return StatusType::SUCCESS;
     } catch(const KeyNotFound& error) {
@@ -53,11 +72,19 @@ StatusType world_cup_t::remove_team(int teamId)
 void world_cup_t::addPlayerAux(int playerId, int teamId,
                                const permutation_t &spirit, int gamesPlayed,
                                int ability, int cards, bool goalKeeper) {
-    auto player = new Player(playerId, spirit, ability, gamesPlayed, cards,
-                                goalKeeper);
+    auto player = new Player(spirit, gamesPlayed, cards, goalKeeper);
     Team* team = teams.search(teamId);
-    players.insert(playerId, player, teamId, team, gamesPlayed);
+
+    players.insert(playerId, player, team, gamesPlayed);
     team->incrementNumPlayers();
+
+    teamsByAbility.remove(Pair<int, int>(team->getTeamAbility(), teamId));
+    team->addAbility(ability);
+    teamsByAbility.insert(Pair<int, int>(team->getTeamAbility(), teamId), team);
+
+    if(goalKeeper) {
+        team->incrementNumGoalKeepers();
+    }
 }
 
 StatusType world_cup_t::add_player(int playerId, int teamId,
@@ -87,6 +114,7 @@ output_t<int> world_cup_t::play_match(int teamId1, int teamId2)
 {
 	if(teamId1 == teamId2 || teamId1 <= 0 || teamId2 <= 0)
         return StatusType::INVALID_INPUT;
+
     Team* team1;
     Team* team2;
     try {
@@ -109,8 +137,8 @@ output_t<int> world_cup_t::play_match(int teamId1, int teamId2)
     int team2Ability = team2->getTotalTeamAbility();
     int team1SpiritStrength = team1->getSpiritStrength();
     int team2SpiritStrength = team2->getSpiritStrength();
-    UnionFind::PlayerNode* team1Head = team1->getHead();
-    UnionFind::PlayerNode* team2Head = team2->getHead();
+    PlayerNode* team1Head = team1->getHead();
+    PlayerNode* team2Head = team2->getHead();
     team1->addGame();
     team1Head->incrementGames();
     team2->addGame();
@@ -149,15 +177,7 @@ output_t<int> world_cup_t::num_played_games_for_player(int playerId) {
     }
 
     try {
-        UnionFind::PlayerNode* playerNode = players.getNode(playerId);
-        int games = 0;
-
-        while(playerNode != nullptr) {
-            games += playerNode->getGames();
-            playerNode = playerNode->getParent();
-        }
-
-        return games;
+        return players.findGames(playerId);
     } catch (const KeyNotFound& error) {
         return StatusType::FAILURE;
     } catch (const bad_alloc& error) {
@@ -223,12 +243,12 @@ output_t<int> world_cup_t::get_team_points(int teamId)
 
 output_t<int> world_cup_t::get_ith_pointless_ability(int i)
 {
-	if(i < 0 || i > teams.getNumNodes()) {
+	if(i < 0 || i >= teams.getNumNodes()) {
         return StatusType::FAILURE;
     }
 
     try {
-        return teamsByAbility.Select(i)->getId();
+        return teamsByAbility.Select(i + 1)->getId();
     }
 
     catch (KeyNotFound& keyNotFound) {
@@ -240,19 +260,8 @@ output_t<int> world_cup_t::get_ith_pointless_ability(int i)
     }
 }
 
-permutation_t world_cup_t::getPartialSpiritAux(int playerId) {
-    UnionFind::PlayerNode* playerNode = players.getNode(playerId);
-    permutation_t result = permutation_t::neutral();
-    while(playerNode != nullptr) {
-        result = playerNode->getExtractSpirit()*result;
-        playerNode = playerNode->getParent();
-    }
-
-    return result;
-}
-
 bool world_cup_t::isActive(int playerId) {
-    UnionFind::PlayerNode* playerNode = players.getNode(playerId);
+    PlayerNode* playerNode = players.getNode(playerId);
     while(playerNode->getParent() != nullptr) {
         playerNode = playerNode->getParent();
     }
@@ -271,7 +280,7 @@ output_t<permutation_t> world_cup_t::get_partial_spirit(int playerId)
     }
 
     try {
-        return getPartialSpiritAux(playerId);
+        return players.findPartialSpirit(playerId);
     } catch (const bad_alloc& error) {
         return  StatusType::ALLOCATION_ERROR;
     }
@@ -283,9 +292,24 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2)
         return StatusType::INVALID_INPUT;
 
     try {
-        Team* checkTeam1 = teams.search(teamId1);
-        Team* checkTeam2 = teams.search(teamId2);
+        Team* buyingTeam = teams.search(teamId1);
+        Team* boughtTeam = teams.search(teamId2);
+        teams.remove(teamId2);
+
+        teamsByAbility.remove(Pair<int,int>(buyingTeam->getTotalPlayerAbility(), teamId1));
+        teamsByAbility.remove(Pair<int, int>(boughtTeam->getTotalPlayerAbility(), teamId2));
+
+        buyingTeam->addPoints(boughtTeam->getTotalPoints());
+        buyingTeam->addAbility(boughtTeam->getTotalPlayerAbility());
+        int buyingTeamGoalKeepers = buyingTeam->getNumGoalKeepers();
+        buyingTeam->setGoalKeepers(buyingTeamGoalKeepers + boughtTeam->getNumGoalKeepers());
+
+        players.unite(buyingTeam, boughtTeam);
+        teamsByAbility.insert(Pair<int, int>(buyingTeam->getTotalPlayerAbility(), teamId1), buyingTeam);
+
+        delete boughtTeam;
     }
+
 
     catch(KeyNotFound& keyNotFound) {
         return StatusType::FAILURE;

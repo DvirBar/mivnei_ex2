@@ -18,7 +18,7 @@ class HashTable {
     void createAndCopyTable(int newSize);
     void expandTable();
     void shrinkTable();
-    void extractToArray(Pair<int, T>* array);
+
     void createTableFromArray(Pair<int, T>* array, AVLTree<int, T>* newTable);
     void insertToCell(int key, T data, AVLTree<int, T>* tableToInsert);
 
@@ -39,12 +39,13 @@ public:
     T remove(int key);
     int size();
     void print();
+    void extractToArray(Pair<int, T>* array);
 };
 
 template<class T>
 HashTable<T>::HashTable(int initSize):
-    tableSize(initSize),
-    numElements(0)
+    numElements(0),
+    tableSize(initSize)
 {
         if(initSize < MIN_SIZE) {
             throw InvalidArguments();
@@ -55,7 +56,6 @@ HashTable<T>::HashTable(int initSize):
 
 template<class T>
 HashTable<T>::~HashTable() {
-    // TODO: When should we delete the trees?
     delete[] table;
 }
 
@@ -118,7 +118,7 @@ void HashTable<T>::createTableFromArray(Pair<int, T>* array, AVLTree<int, T>* ne
 
 template<class T>
 T HashTable<T>::lookup(int key) const {
-    table[hash(key)].search(key);
+    return table[hash(key)].search(key);
 }
 
 template<class T>
