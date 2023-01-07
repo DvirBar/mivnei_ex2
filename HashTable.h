@@ -95,6 +95,7 @@ void HashTable<T>::createAndCopyTable(int size) {
     createTableFromArray(helperArray, newTable);
 
     delete[] table;
+    delete[] helperArray;
     table = newTable;
 }
 
