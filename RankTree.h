@@ -650,12 +650,10 @@ const typename RankTree<K, T>::RankNode* RankTree<K, T>::selectByNode(const Rank
         throw KeyNotFound();
     }
 
-    int leftChildWeight = 0, rightChildWeight = 0;
+    int leftChildWeight = 0;
 
     if(node->leftChild != nullptr)
         leftChildWeight = node->leftChild->weight;
-    if(node->rightChild != nullptr)
-        rightChildWeight = node->rightChild->weight;
 
     if(leftChildWeight == rank - 1) {
         return node;
