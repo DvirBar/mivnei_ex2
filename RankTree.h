@@ -221,7 +221,7 @@ const T& RankTree<K, T>::search(const K &key) const {
 
 template <class K, class T>
 typename RankTree<K, T>::RankNode* RankTree<K, T>::insertByNode(RankTree::RankNode *node,
-                                                             const K &key, const T &data) {
+                                                                const K &key, const T &data) {
     if (node == nullptr) {
         RankTree::RankNode *newLeaf = new RankTree::RankNode(key, data);
         return newLeaf;
@@ -498,7 +498,7 @@ bool RankTree<K, T>::isExist(const K &key) const {
 
 template<class K, class T>
 void RankTree<K, T>::mergeArrays(Pair<K, T>* newArr, int newArrSize, Pair<K, T>* arr1,
-                                int arr1Size, Pair<K, T>* arr2, int arr2Size) {
+                                 int arr1Size, Pair<K, T>* arr2, int arr2Size) {
     int newArrIndex = 0, arr1Index = 0, arr2Index = 0;
 
     while(arr1Index < arr1Size &&
