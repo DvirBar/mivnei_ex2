@@ -71,20 +71,15 @@ void UnionFind::unite(Team* buyer, Team* bought) {
     PlayerNode* buyerHead = buyer->getHead();
     PlayerNode* boughtHead = bought->getHead();
 
-    if(buyerHead == nullptr && boughtHead == nullptr) {
+    if((buyerHead == nullptr && boughtHead == nullptr) || (boughtHead == nullptr)) {
         return;
     }
 
     if(buyerHead == nullptr) {
         buyer->setHead(boughtHead);
+        buyer->getHead()->setTeam(buyer);
         return;
     }
-
-    if(boughtHead == nullptr) {
-        bought->setHead(buyerHead);
-        return;
-    }
-
 
     if(buyer->getNumPlayers() >= bought->getNumPlayers()) {
         // TODO: split to separated functions
@@ -103,6 +98,7 @@ void UnionFind::unite(Team* buyer, Team* bought) {
 //       AKA IF: buyer->getNumPlayers() <= bought->getNumPlayers()
         buyer->setHead(boughtHead);
         buyerHead->setParent(boughtHead);
+        boughtHead->setTeam(buyer);
         buyerHead->setGames(buyerHead->getGames()-boughtHead->getGames());
 
         permutation_t buyerExSpirit = buyerHead->getExtractSpirit();
