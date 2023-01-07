@@ -19,6 +19,8 @@ world_cup_t::world_cup_t():
 world_cup_t::~world_cup_t()
 {
 	auto teamsArray = new Pair<int, Team*>[teams.getNumNodes()];
+    teams.inorderDataToArray(teamsArray);
+
     for(int i = 0; i < teams.getNumNodes(); i++) {
         delete teamsArray[i].getValue();
     }
