@@ -41,6 +41,8 @@ private:
                       int ability, int cards, bool goalKeeper);
 
     bool isActive(int playerId);
+
+    static Pair<int, int> getAbilityKey(Team* team);
 public:
 	// <DO-NOT-MODIFY> {
 	

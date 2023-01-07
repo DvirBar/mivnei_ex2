@@ -84,10 +84,6 @@ int Team::getTotalTeamAbility() const {
     return totalPlayerAbility + totalPoints;
 }
 
-int Team::getTeamAbility() const {
-    return totalPlayerAbility;
-}
-
 int Team::getSpiritStrength() const {
     return teamSpirit.strength();
 }

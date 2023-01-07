@@ -34,7 +34,6 @@ public:
     int getId() const;
     int getTotalPlayerAbility() const;
     int getTotalTeamAbility() const;
-    int getTeamAbility() const;
     int getSpiritStrength() const;
     int getNumPlayers() const;
     void addAbility(const int abilityToAdd); // Can also be a negative value

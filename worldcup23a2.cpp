@@ -39,7 +39,7 @@ StatusType world_cup_t::add_team(int teamId)
     try {
         Team* newTeam = new Team(teamId);
         teams.insert(teamId, newTeam);
-        teamsByAbility.insert(Pair<int,int>(0, teamId), newTeam);
+        teamsByAbility.insert(getAbilityKey(newTeam), newTeam);
     }
     catch (const bad_alloc& badAlloc) {
         return StatusType::ALLOCATION_ERROR;
@@ -61,7 +61,7 @@ StatusType world_cup_t::remove_team(int teamId)
         }
 
         teams.remove(teamId);
-        teamsByAbility.remove(Pair<int, int>(team->getTeamAbility(), teamId));
+        teamsByAbility.remove(getAbilityKey(team));
         delete team;
         return StatusType::SUCCESS;
     } catch(const KeyNotFound& error) {
@@ -80,9 +80,9 @@ void world_cup_t::addPlayerAux(int playerId, int teamId,
     players.insert(playerId, player, team, gamesPlayed);
     team->incrementNumPlayers();
 
-    teamsByAbility.remove(Pair<int, int>(team->getTeamAbility(), teamId));
+    teamsByAbility.remove(world_cup_t::getAbilityKey(team));
     team->addAbility(ability);
-    teamsByAbility.insert(Pair<int, int>(team->getTeamAbility(), teamId), team);
+    teamsByAbility.insert(getAbilityKey(team), team);
 
     if(goalKeeper) {
         team->incrementNumGoalKeepers();
@@ -298,8 +298,8 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2)
         Team* boughtTeam = teams.search(teamId2);
         teams.remove(teamId2);
 
-        teamsByAbility.remove(Pair<int,int>(buyingTeam->getTotalPlayerAbility(), teamId1));
-        teamsByAbility.remove(Pair<int, int>(boughtTeam->getTotalPlayerAbility(), teamId2));
+        teamsByAbility.remove(getAbilityKey(buyingTeam));
+        teamsByAbility.remove(getAbilityKey(boughtTeam));
 
         buyingTeam->addPoints(boughtTeam->getTotalPoints());
         buyingTeam->addAbility(boughtTeam->getTotalPlayerAbility());
@@ -307,7 +307,7 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2)
         buyingTeam->setGoalKeepers(buyingTeamGoalKeepers + boughtTeam->getNumGoalKeepers());
 
         players.unite(buyingTeam, boughtTeam);
-        teamsByAbility.insert(Pair<int, int>(buyingTeam->getTotalPlayerAbility(), teamId1), buyingTeam);
+        teamsByAbility.insert(getAbilityKey(buyingTeam), buyingTeam);
 
         delete boughtTeam;
     }
@@ -322,4 +322,8 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2)
     }
 
 	return StatusType::SUCCESS;
+}
+
+Pair<int, int> world_cup_t::getAbilityKey(Team *team) {
+    return Pair<int, int>(team->getTotalPlayerAbility(), team->getId());
 }
