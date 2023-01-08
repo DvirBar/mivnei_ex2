@@ -11,7 +11,6 @@ Team::Team(int teamId) :
         totalPlayerAbility(0),
         numGoalkeepers(0),
         totalGamesPlayed(0),
-        teamSpirit(permutation_t::neutral()),
         numPlayers(0),
         head(nullptr)
 {}
@@ -85,6 +84,8 @@ int Team::getTotalTeamAbility() const {
 }
 
 int Team::getSpiritStrength() const {
+    PlayerNode* teamHead = head;
+    permutation_t teamSpirit = teamHead->getExtractSpirit()*teamHead->getInsertSpirit();
     return teamSpirit.strength();
 }
 

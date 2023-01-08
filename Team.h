@@ -57,7 +57,6 @@ private:
     int totalPlayerAbility;
     int numGoalkeepers;
     int totalGamesPlayed;
-    permutation_t teamSpirit;
     int numPlayers;
     PlayerNode* head;
 };
