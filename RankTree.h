@@ -326,13 +326,7 @@ typename RankTree<K, T>::RankNode* RankTree<K, T>::removeAux(const K& key, RankN
 
     if(node->key == key) {
         *data = node->data;
-        RankNode* nodeToReturn = execRemove(node);
-
-        if(nodeToReturn != nullptr) {
-            nodeToReturn->updateWeight();
-        }
-
-        return nodeToReturn;
+        return execRemove(node);
     }
 
     if(node->key > key) {
@@ -353,6 +347,7 @@ template <class K, class T>
 typename RankTree<K, T>::RankNode* RankTree<K, T>::execRemove(RankNode* node) {
     if(node->leftChild != nullptr && node->rightChild != nullptr) {
         node->rightChild = removeInorder(node->rightChild, node);
+        node->updateWeight();
         return node->execRotation();
     }
 
@@ -370,6 +365,7 @@ typename RankTree<K, T>::RankNode* RankTree<K, T>::removeInorder(RankNode* node,
 
 
     node->leftChild = removeInorder(node->leftChild, replacedNode);
+    node->updateWeight();
     return node->execRotation();
 }
 
@@ -463,7 +459,7 @@ void RankTree<K, T>::print2DUtil(RankNode* root, int space) {
     cout << endl;
     for (int i = COUNT; i < space; i++)
         cout << " ";
-    cout << root->key;
+    cout << root->key << " (" << root->weight << ")";
     print2DUtil(root->leftChild, space);
 }
 
@@ -644,9 +640,6 @@ template<class K, class T>
 bool RankTree<K, T>::RankNode::isLeaf() {
     return this->leftChild == nullptr && this->rightChild == nullptr;
 }
-
-
-
 
 template<class K, class T>
 const typename RankTree<K, T>::RankNode* RankTree<K, T>::selectByNode(const RankTree::RankNode* node, const int rank) {
