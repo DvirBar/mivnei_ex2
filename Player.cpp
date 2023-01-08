@@ -13,11 +13,7 @@ Player::Player(int playerId, const permutation_t& spirit, int gamesPlayed,
 
 permutation_t Player::getSpirit() const {
     return spirit;
-};
-
-//const Tuple Player::getStatsTuple() const {
-//    return Tuple(goals, cards, playerId);
-//}
+}
 
 int Player::getCards() const {
     return cards;
