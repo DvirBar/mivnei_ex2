@@ -177,7 +177,7 @@ void UnionFind::compressPaths(PlayerNode *node, PlayerNode *root, int totalSum, 
 
         currentPermutation = prevNode->getExtractSpirit();
         prevNode->setExtractSpirit(totalPermutation * permutationToSubtract.inv());
-        permutationToSubtract = permutationToSubtract * currentPermutation;
+        permutationToSubtract = currentPermutation * permutationToSubtract;
 
         prevNode->setParent(root);
     }
