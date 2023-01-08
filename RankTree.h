@@ -326,7 +326,13 @@ typename RankTree<K, T>::RankNode* RankTree<K, T>::removeAux(const K& key, RankN
 
     if(node->key == key) {
         *data = node->data;
-        return execRemove(node);
+        RankNode* nodeToReturn = execRemove(node);
+
+        if(nodeToReturn != nullptr) {
+            nodeToReturn->updateWeight();
+        }
+
+        return nodeToReturn;
     }
 
     if(node->key > key) {
@@ -348,7 +354,6 @@ typename RankTree<K, T>::RankNode* RankTree<K, T>::execRemove(RankNode* node) {
     if(node->leftChild != nullptr && node->rightChild != nullptr) {
         node->rightChild = removeInorder(node->rightChild, node);
         return node->execRotation();
-
     }
 
     return baseRemove(node);
