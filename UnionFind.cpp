@@ -81,9 +81,7 @@ void UnionFind::unite(Team* buyer, Team* bought) {
         buyer->getHead()->setTeam(buyer);
         return;
     }
-    if(buyer->getId() == 70841) {
-        cout << "hello" << endl;
-    }
+
     if(buyer->getNumPlayers() >= bought->getNumPlayers()) {
         // TODO: split to separated functions
         boughtHead->setParent(buyerHead);
@@ -94,7 +92,7 @@ void UnionFind::unite(Team* buyer, Team* bought) {
         permutation_t boughtExSpirit = boughtHead->getExtractSpirit();
         // TODO: double check the permutations here
         buyerHead->setInsertSpirit(buyerInSpirit*boughtExSpirit*boughtInSpirit);
-        boughtHead->setExtractSpirit(buyerInSpirit*boughtInSpirit);
+        boughtHead->setExtractSpirit(buyerInSpirit*boughtExSpirit);
     } else {
 //       AKA IF: buyer->getNumPlayers() <= bought->getNumPlayers()
         buyer->setHead(boughtHead);
@@ -131,7 +129,8 @@ PlayerNode* UnionFind::findAux(int playerId, int* summedNumGames, permutation_t*
 
     while(lookedUpNode->getParent() != nullptr) {
         *summedNumGames += lookedUpNode->getGames();
-        *multipliedPermutation = *multipliedPermutation * lookedUpNode->getExtractSpirit();
+
+        *multipliedPermutation = lookedUpNode->getExtractSpirit() * (*multipliedPermutation);
         lookedUpNode = lookedUpNode->getParent();
     }
 
